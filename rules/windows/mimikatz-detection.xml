@@ -1,0 +1,23 @@
+<group name="custom,sysmon,">
+
+  <!-- Detect Mimikatz execution by process name -->
+  <rule id="100001" level="15">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.originalFileName" type="pcre2">(?i)mimikatz</field>
+    <description>ALERT: Mimikatz detected - possible credential theft!</description>
+    <mitre>
+      <id>T1003</id>
+    </mitre>
+  </rule>
+
+  <!-- Detect Mimikatz by common command line arguments -->
+  <rule id="100002" level="15">
+    <if_sid>61603</if_sid>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(sekurlsa|lsadump|kerberos::)</field>
+    <description>ALERT: Mimikatz commands detected - credential dumping in progress!</description>
+    <mitre>
+      <id>T1003</id>
+    </mitre>
+  </rule>
+
+</group>
