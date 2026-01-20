@@ -1,10 +1,15 @@
-<group name="custom,sysmon,">
+<?xml version="1.0" encoding="UTF-8"?>
+<group name="custom,sysmon,attack,">
 
-  <!-- Detect Mimikatz execution by process name -->
+  <!-- ========================================== -->
+  <!-- T1003 - Mimikatz Detection                 -->
+  <!-- ========================================== -->
+
+  <!-- Detect Mimikatz by original filename -->
   <rule id="100001" level="15">
-    <if_sid>61603</if_sid>
+    <if_group>sysmon_event1</if_group>
     <field name="win.eventdata.originalFileName" type="pcre2">(?i)mimikatz</field>
-    <description>ALERT: Mimikatz detected - possible credential theft!</description>
+    <description>CRITICAL: Mimikatz detected - credential theft tool!</description>
     <mitre>
       <id>T1003</id>
     </mitre>
@@ -12,11 +17,87 @@
 
   <!-- Detect Mimikatz by common command line arguments -->
   <rule id="100002" level="15">
-    <if_sid>61603</if_sid>
+    <if_group>sysmon_event1</if_group>
     <field name="win.eventdata.commandLine" type="pcre2">(?i)(sekurlsa|lsadump|kerberos::)</field>
-    <description>ALERT: Mimikatz commands detected - credential dumping in progress!</description>
+    <description>CRITICAL: Mimikatz commands detected - credential dumping!</description>
     <mitre>
       <id>T1003</id>
+    </mitre>
+  </rule>
+
+  <!-- ========================================== -->
+  <!-- T1059.001 - PowerShell Attacks             -->
+  <!-- ========================================== -->
+
+  <!-- Encoded PowerShell Commands -->
+  <rule id="100003" level="12">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)\s+-(enc|encodedcommand|e)\s+[A-Za-z0-9+/=]{20,}</field>
+    <description>ALERT: Encoded PowerShell command detected!</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+  </rule>
+
+  <!-- PowerShell Download Cradle -->
+  <rule id="100004" level="12">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(IEX|Invoke-Expression).*(IWR|Invoke-WebRequest|WebClient|DownloadString)</field>
+    <description>ALERT: PowerShell download cradle detected!</description>
+    <mitre>
+      <id>T1059.001</id>
+    </mitre>
+  </rule>
+
+  <!-- ========================================== -->
+  <!-- T1136.001 - Account Creation               -->
+  <!-- ========================================== -->
+
+  <!-- Local Account Creation -->
+  <rule id="100005" level="10">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)net1?\s+(user|localgroup).*/add</field>
+    <description>ALERT: Local account or group membership created!</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+  </rule>
+
+  <!-- ========================================== -->
+  <!-- T1053.005 - Scheduled Task Persistence     -->
+  <!-- ========================================== -->
+
+  <!-- Scheduled Task Creation -->
+  <rule id="100006" level="10">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)schtasks.*/create</field>
+    <description>ALERT: Scheduled task created - possible persistence!</description>
+    <mitre>
+      <id>T1053.005</id>
+    </mitre>
+  </rule>
+
+  <!-- ========================================== -->
+  <!-- T1562.001 - Defense Evasion                -->
+  <!-- ========================================== -->
+
+  <!-- Disable Windows Defender -->
+  <rule id="100007" level="14">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(Set-MpPreference.*Disable|DisableRealtimeMonitoring)</field>
+    <description>CRITICAL: Attempt to disable Windows Defender!</description>
+    <mitre>
+      <id>T1562.001</id>
+    </mitre>
+  </rule>
+
+  <!-- Stop Security Services -->
+  <rule id="100008" level="14">
+    <if_group>sysmon_event1</if_group>
+    <field name="win.eventdata.commandLine" type="pcre2">(?i)(net\s+stop|sc\s+stop).*(windefend|sense)</field>
+    <description>CRITICAL: Attempt to stop security services!</description>
+    <mitre>
+      <id>T1562.001</id>
     </mitre>
   </rule>
 
