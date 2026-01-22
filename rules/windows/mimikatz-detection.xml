@@ -101,4 +101,20 @@
     </mitre>
   </rule>
 
+  <!-- ========================================== -->
+  <!-- T1558.003 - Kerberoasting Detection        -->
+  <!-- ========================================== -->
+
+  <!-- Kerberoasting - RC4 Ticket Request -->
+  <rule id="100009" level="12">
+    <if_sid>60103</if_sid>
+    <field name="win.system.eventID">^4769$</field>
+    <field name="win.eventdata.ticketEncryptionType">^0x17$</field>
+    <description>ALERT: Possible Kerberoasting Attack Detected (RC4 Request)</description>
+    <mitre>
+      <id>T1558.003</id>
+    </mitre>
+    <options>no_full_log</options>
+  </rule>
+
 </group>
