@@ -54,6 +54,10 @@
   <!-- ========================================== -->
 
   <!-- Local Account Creation -->
+  <!-- REVIEW: This rule combines account creation AND group membership modification.
+       T1136.001 is only for "Local Account Creation".
+       Group membership modification (localgroup /add) should use T1098 (Account Manipulation).
+       Consider splitting into two separate rules for accurate MITRE mapping. -->
   <rule id="100005" level="10">
     <if_group>sysmon_event1</if_group>
     <field name="win.eventdata.commandLine" type="pcre2">(?i)net1?\s+(user|localgroup).*/add</field>
@@ -103,6 +107,7 @@
 
   <!-- ========================================== -->
   <!-- T1558.003 - Kerberoasting Detection        -->
+  <!-- T1558.004 - AS-REP Roasting (Rule 100010)  -->
   <!-- ========================================== -->
 
   <!-- Kerberoasting - RC4 Ticket Request -->
@@ -117,6 +122,8 @@
     <options>no_full_log</options>
   </rule>
 
+  <!-- REVIEW: Rule 100010 below detects AS-REP Roasting (T1558.004), not Kerberoasting (T1558.003).
+       While correctly tagged with T1558.004, consider moving to its own section for clarity. -->
   <rule id="100010" level="12">
     <if_sid>60103</if_sid>
     <field name="win.system.eventID">^4768$</field>
@@ -128,5 +135,25 @@
     </mitre>
     <options>no_full_log</options>
   </rule>
+
+  <!-- ========================================== -->
+  <!-- REVIEW: Rule 100011 has multiple issues:   -->
+  <!-- 1. Misplaced under Kerberoasting section - should have its own section -->
+  <!-- 2. Hardcoded filename "malware_dropper.ps1" is too specific/unrealistic -->
+  <!--    This appears to be a test/simulation rule, not a production detection -->
+  <!-- 3. MITRE T1105 (Ingress Tool Transfer) may not be the best fit -->
+  <!--    Consider T1204.002 (User Execution: Malicious File) or T1059.001 -->
+  <!-- 4. Depends on if_sid 554 - verify this parent rule exists and is appropriate -->
+  <!-- 5. Should use field matching for better detection instead of <match> tag -->
+  <!-- ========================================== -->
+  <rule id="100011" level="12">
+  <if_sid>554</if_sid>
+  <match>malware_dropper.ps1</match>
+  <description>CRITICAL: Known Malware File Detected (Simulated Dropper)</description>
+  <mitre>
+    <id>T1105</id>
+  </mitre>
+</rule>
+
 
 </group>
