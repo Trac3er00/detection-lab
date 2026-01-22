@@ -37,6 +37,8 @@ My cybersecurity homelab documenting my path to Detection Engineer.
 | 100007 | Disable Windows Defender | T1562.001 | ⬜ Untested |
 | 100008 | Stop Security Services | T1562.001 | ⬜ Untested |
 | 100009 | Kerberoasting Detection (RC4) | T1558.003 | ✅ Tested |
+| 100010 | AS-REP Roasting (No Pre-Auth) | T1558.004 | ✅ Tested |
+| 100011 | Malware File Drop (FIM) | T1105 | ✅ Tested |
 
 ### Rule 92652: Pass-the-Hash (Administrator)
 **Description:** Detects NTLM authentication for Administrative accounts over the network (Logon Type 3), which is often indicative of Pass-the-Hash lateral movement.
@@ -66,3 +68,17 @@ My cybersecurity homelab documenting my path to Detection Engineer.
     * Identified Event ID 4769 with Ticket Encryption `0x17` (RC4).
     * Created custom Wazuh rule (ID 100009) to alert on this activity.
     * **Result:** Validated detection in Wazuh Dashboard.
+
+### Day 4: Identity Attacks (AS-REP Roasting)
+* **Attack Simulation:** Executed AS-REP Roasting attack against accounts with Kerberos pre-authentication disabled.
+* **Detection Engineering:**
+    * Identified Event ID 4768 with pre-authentication type `0` indicating no pre-auth.
+    * Created custom Wazuh rule (ID 100010) to detect AS-REP Roasting attempts.
+    * **Result:** Successfully detected and validated in Wazuh Dashboard.
+
+### Day 5: Endpoint Detection (File Integrity Monitoring)
+* **Configuration:** Enabled Wazuh FIM (File Integrity Monitoring) on target endpoints.
+* **Attack Simulation:** Simulated malware file drops in monitored directories.
+* **Detection Engineering:**
+    * Created custom Wazuh rule (ID 100011) to alert on suspicious file creation events.
+    * **Result:** Successfully detected malware file drops via FIM alerts.
