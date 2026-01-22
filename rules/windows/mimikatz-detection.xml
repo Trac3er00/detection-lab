@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<group name="custom,sysmon,attack,">
+<group name="custom,sysmon,attack">
 
   <!-- ========================================== -->
   <!-- T1003 - Mimikatz Detection                 -->
@@ -113,6 +113,18 @@
     <description>ALERT: Possible Kerberoasting Attack Detected (RC4 Request)</description>
     <mitre>
       <id>T1558.003</id>
+    </mitre>
+    <options>no_full_log</options>
+  </rule>
+
+  <rule id="100010" level="12">
+    <if_sid>60103</if_sid>
+    <field name="win.system.eventID">^4768$</field>
+    <field name="win.eventdata.ticketEncryptionType">^0x17$</field>
+    <field name="win.eventdata.preAuthType">^0$</field>
+    <description>Possible AS-REP Roasting Attack (RC4 TGT with No Pre-Auth)</description>
+    <mitre>
+      <id>T1558.004</id>
     </mitre>
     <options>no_full_log</options>
   </rule>
