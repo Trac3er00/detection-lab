@@ -38,6 +38,12 @@ My cybersecurity homelab documenting my path to Detection Engineer.
 | 100008 | Stop Security Services | T1562.001 | ⬜ Untested |
 | 100009 | Kerberoasting Detection (RC4) | T1558.003 | ✅ Tested |
 
+### Rule 92652: Pass-the-Hash (Administrator)
+**Description:** Detects NTLM authentication for Administrative accounts over the network (Logon Type 3), which is often indicative of Pass-the-Hash lateral movement.
+**MITRE ATT&CK:** [T1550.002](https://attack.mitre.org/techniques/T1550/002/)
+**Severity:** High (Level 6-12 depending on frequency)
+**Status:** ✅ Detected via Built-in Rule 92652
+
 ## Progress
 - [x] Deploy Wazuh SIEM
 - [x] Configure Windows 11 + Sysmon
