@@ -58,6 +58,30 @@ My cybersecurity homelab documenting my path to Detection Engineer.
 
 ## Progress Log
 
+### Day 1: Lab Foundation & Wazuh Deployment
+* **Infrastructure:** Set up Proxmox hypervisor on Dell R720 with dedicated VLAN for isolated lab traffic.
+* **Configuration:**
+    * Deployed Wazuh v4.14.2 using all-in-one installation (`wazuh-install.sh -a`).
+    * Stack includes: Wazuh Manager, Wazuh Indexer, and Wazuh Dashboard.
+    * Allocated 8GB RAM to Wazuh VM after initial memory issues.
+    * Opened firewall ports: 1514 (agent), 1515 (enrollment), 443 (dashboard).
+* **Key Learnings:**
+    * Wazuh uses OSSEC-style rule syntax with XML format.
+    * Alert structure available at `/var/ossec/logs/alerts/alerts.json`.
+    * Custom rules go in `/var/ossec/etc/rules/` (defaults in `/var/ossec/ruleset/rules/`).
+
+### Day 2: Windows Agent & First Detection Rules
+* **Infrastructure:** Deployed Windows 11 VM with Sysmon (SwiftOnSecurity configuration).
+* **Configuration:**
+    * Installed and enrolled Wazuh agent to manager.
+    * Configured Sysmon log ingestion via `ossec.conf` (`Microsoft-Windows-Sysmon/Operational`).
+* **Detection Engineering:**
+    * Created custom Wazuh rules for Mimikatz detection:
+        * Rule 100001: Filename-based detection (`(?i)mimikatz`).
+        * Rule 100002: Command-line argument detection (`sekurlsa|lsadump|kerberos::`).
+    * Both rules mapped to MITRE ATT&CK T1003 (Credential Dumping).
+    * **Result:** Rules deployed to `/var/ossec/etc/rules/`.
+
 ### Day 3: Active Directory & Kerberoasting
 * **Infrastructure:** Deployed GOAD-Light AD Lab (DC01, DC02, SRV02) on Proxmox.
 * **Configuration:**
