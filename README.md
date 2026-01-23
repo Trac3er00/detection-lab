@@ -82,3 +82,12 @@ My cybersecurity homelab documenting my path to Detection Engineer.
 * **Detection Engineering:**
     * Created custom Wazuh rule (ID 100011) to alert on suspicious file creation events.
     * **Result:** Successfully detected malware file drops via FIM alerts.
+
+### Day 6: Automated Active Response (SOAR "Plan B")
+
+* **Objective:** Automate the blocking of malicious actors detected by Suricata without relying on external SOAR platforms (Native Wazuh).
+* **Challenge:** The default Wazuh `firewall-drop` script expects the field `srcip`, but Suricata logs use `src_ip`, causing the automation to fail silently.
+* **Solution:**
+    * **Manager Side:** Configured a custom `<command>` entry in `ossec.conf` to map the `src_ip` field correctly.
+    * **Agent Side:** Engineered a custom "Universal Wrapper" script for `iptables` that captures raw STDIN data, extracts the IP using regex, and executes the block regardless of input format.
+* **Result:** Successfully automated the blocking of the "BlackSun" C2 User-Agent. Attacks are now dropped at the firewall level instantly upon detection.
