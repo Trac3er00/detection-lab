@@ -108,10 +108,18 @@ My cybersecurity homelab documenting my path to Detection Engineer.
     * **Result:** Successfully detected malware file drops via FIM alerts.
 
 ### Day 6: Automated Active Response (SOAR "Plan B")
-
 * **Objective:** Automate the blocking of malicious actors detected by Suricata without relying on external SOAR platforms (Native Wazuh).
 * **Challenge:** The default Wazuh `firewall-drop` script expects the field `srcip`, but Suricata logs use `src_ip`, causing the automation to fail silently.
 * **Solution:**
     * **Manager Side:** Configured a custom `<command>` entry in `ossec.conf` to map the `src_ip` field correctly.
     * **Agent Side:** Engineered a custom "Universal Wrapper" script for `iptables` that captures raw STDIN data, extracts the IP using regex, and executes the block regardless of input format.
 * **Result:** Successfully automated the blocking of the "BlackSun" C2 User-Agent. Attacks are now dropped at the firewall level instantly upon detection.
+
+### Day 7: Advanced Detection Engineering (Sysmon Debugging)
+* **Objective:** Validate custom rules for PowerShell download cradles and security service tampering.
+* **Challenge:** Custom rules failed to fire despite Sysmon logs being present.
+* **Root Cause Analysis:**
+    * Used Wazuh Archives (`logall_json`) to inspect raw logs.
+    * Discovered logs were decoded as generic `json` instead of `windows_eventchannel`, causing standard `<if_sid>61603</if_sid>` dependencies to fail.
+* **Solution:** Engineered "Self-Sufficient" rules that manually match `win.system.providerName` and `win.system.eventID` (Regex `^1$`), decoupling detection logic from decoder quirks.
+* **Result:** Verified successful detection of PowerShell Download Cradles (Rule 100004).
